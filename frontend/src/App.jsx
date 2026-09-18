@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { ShieldAlert, CheckCircle2, Code2, Play, RefreshCw, Layers, Cpu, FileText, FolderGit2 } from 'lucide-react';
 
+// Automatically use live Render backend URL in production, or localhost during local dev
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
 function App() {
   const [projectName, setProjectName] = useState('');
   const [githubUrl, setGithubUrl] = useState('');
@@ -16,7 +19,7 @@ function App() {
     setResult(null);
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/analyze-repo', {
+      const response = await axios.post(`${API_BASE_URL}/api/analyze-repo`, {
         project_name: projectName || 'GitHub Repository Audit',
         github_url: githubUrl
       });
