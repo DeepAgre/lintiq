@@ -44,6 +44,9 @@ function App() {
               <span className="block text-xs uppercase tracking-wider text-slate-400 font-semibold">GitHub Code Intelligence Suite</span>
             </div>
           </div>
+          <div className="hidden md:flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 px-4 py-2 rounded-xl text-xs font-bold">
+            <span>Target Language: Python (.py)</span>
+          </div>
         </div>
       </nav>
 
@@ -56,7 +59,7 @@ function App() {
             Automated Repository Code Audit
           </h1>
           <p className="mt-4 text-slate-600 text-lg">
-            Inspect architectural patterns, detect balanced maintainability smells, and calculate codebase quality scores instantly.
+            Inspect architectural patterns, detect maintainability smells in <span className="font-semibold text-indigo-600">Python (.py) source files</span>, and calculate codebase quality scores instantly.
           </p>
         </div>
 
@@ -69,7 +72,7 @@ function App() {
               <h2 className="text-xl font-bold text-slate-900 flex items-center gap-3">
                 <Code2 className="w-6 h-6 text-indigo-600" /> Repository Target Configuration
               </h2>
-              <span className="text-xs bg-indigo-50 text-indigo-600 font-bold px-3 py-1.5 rounded-lg">Public Repos</span>
+              <span className="text-xs bg-indigo-50 text-indigo-600 font-bold px-3 py-1.5 rounded-lg">Python Engine</span>
             </div>
             
             <form onSubmit={handleAnalyze} className="space-y-6">
@@ -95,12 +98,13 @@ function App() {
                   className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-5 py-4 text-slate-800 text-base placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition font-mono"
                   required
                 />
+                <p className="text-[11px] text-slate-400 mt-2">Note: Automated AST traversal scans all repository files ending with <span className="font-mono font-bold text-indigo-600">.py</span>.</p>
               </div>
 
               {/* Enhanced Rules Explanation Box */}
               <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-2">
-                <span className="font-bold text-slate-800 block mb-1 text-sm">Active AST Heuristic Audit Rules:</span>
-                <p>&bull; <b>Long Function:</b> Flags functions exceeding 35 lines of code.</p>
+                <span className="font-bold text-slate-800 block mb-1 text-sm">Active Python AST Heuristic Audit Rules:</span>
+                <p>&bull; <b>Long Function:</b> Flags Python functions exceeding 35 lines of code.</p>
                 <p>&bull; <b>Too Many Parameters:</b> Flags functions accepting more than 5 arguments.</p>
                 <p>&bull; <b>High Variable Complexity:</b> Detects functions with over 10 local assignment statements.</p>
                 <p>&bull; <b>Empty Function Stub:</b> Flags unfinished functions containing only a `pass` statement.</p>
@@ -114,7 +118,7 @@ function App() {
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-2xl shadow-xl shadow-indigo-200 transition-all flex items-center justify-center gap-3 text-base disabled:opacity-50 cursor-pointer"
               >
                 {loading ? <RefreshCw className="w-6 h-6 animate-spin" /> : <Play className="w-6 h-6 fill-current" />}
-                {loading ? 'Fetching Repository & Running AST Audit...' : 'Run Repository Code Audit'}
+                {loading ? 'Fetching Python Files & Running AST Audit...' : 'Run Repository Code Audit'}
               </button>
             </form>
 
@@ -144,7 +148,7 @@ function App() {
                       </div>
                     </div>
                     <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-center">
-                      <div className="text-xs uppercase tracking-wider text-slate-400 font-bold">Total Lines</div>
+                      <div className="text-xs uppercase tracking-wider text-slate-400 font-bold">Python Lines</div>
                       <div className="text-3xl font-extrabold mt-2 text-slate-800">{result.total_lines}</div>
                     </div>
                     <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-center">
@@ -158,13 +162,13 @@ function App() {
                   {/* Scanned Files Section */}
                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                      <FolderGit2 className="w-4 h-4 text-indigo-600" /> Successfully Scanned Files ({result.files_scanned.length})
+                      <FolderGit2 className="w-4 h-4 text-indigo-600" /> Successfully Parsed Python Files ({result.files_scanned.length})
                     </div>
                     <div className="max-h-28 overflow-y-auto space-y-1 pr-1 font-mono text-xs text-slate-700">
                       {result.files_scanned.map((file, idx) => (
                         <div key={idx} className="bg-white px-3 py-1 rounded border border-slate-200 flex items-center justify-between">
                           <span>{file}</span>
-                          <span className="text-[10px] text-emerald-600 font-sans font-semibold bg-emerald-50 px-2 py-0.5 rounded">Parsed</span>
+                          <span className="text-[10px] text-emerald-600 font-sans font-semibold bg-emerald-50 px-2 py-0.5 rounded">AST Parsed (.py)</span>
                         </div>
                       ))}
                     </div>
@@ -176,7 +180,7 @@ function App() {
                     {result.smells.length === 0 ? (
                       <div className="flex items-center gap-3 text-emerald-700 bg-emerald-50 p-5 rounded-2xl border border-emerald-200">
                         <CheckCircle2 className="w-6 h-6 shrink-0" />
-                        <span className="text-base font-medium">No code smells detected! High maintainability score.</span>
+                        <span className="text-base font-medium">No code smells detected across scanned Python files!</span>
                       </div>
                     ) : (
                       <div className="space-y-4 max-h-[220px] overflow-y-auto pr-2">
@@ -202,8 +206,8 @@ function App() {
                   <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300">
                     <FileText className="w-10 h-10" />
                   </div>
-                  <p className="text-base font-semibold text-slate-700">No repository audited yet</p>
-                  <p className="text-sm text-slate-400 mt-1">Enter a public GitHub repository URL on the left to run the code audit.</p>
+                  <p className="text-base font-semibold text-slate-700">No Python repository audited yet</p>
+                  <p className="text-sm text-slate-400 mt-1">Enter a public GitHub repository URL on the left to scan and analyze all Python (.py) source files.</p>
                 </div>
               )}
             </div>
