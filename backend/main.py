@@ -57,7 +57,7 @@ def fetch_python_files_from_github(repo_url: str):
                 if python_files:
                     return python_files
 
-        raise HTTPException(status_code=400, detail="Could not retrieve files. Make sure the repo is public and uses 'main' or 'master' branch.")
+        raise HTTPException(status_code=400, detail="Could not retrieve Python files. Make sure the repo is public and uses 'main' or 'master' branch.")
 
     except Exception as e:
         if isinstance(e, HTTPException):
@@ -71,18 +71,8 @@ def analyze_github_repo(submission: RepoSubmission, db: Session = Depends(get_db
     if "# --- file:" in submission.github_url or "def " in submission.github_url:
         repo_files["manual_snippet.py"] = submission.github_url
     else:
-        try:
-            repo_files = fetch_python_files_from_github(submission.github_url)
-        except Exception:
-            repo_files = {
-                "fallback_demo_module.py": """
-def process_user_data(user_id, token, db_session, cache_client, logger_instance, config_dict):
-    try:
-        print("Processing...")
-    except:
-        pass
-"""
-            }
+        # Directly fetch from GitHub without silent fallback so errors are transparent
+        repo_files = fetch_python_files_from_github(submission.github_url)
 
     smells = []
     total_lines = 0
